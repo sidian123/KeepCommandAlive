@@ -10,7 +10,7 @@
     </parent>
     <groupId>live.sidian.command</groupId>
     <artifactId>keep-alive</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0</version>
     <name>keep-alive</name>
     <description>保证命令运行正常</description>
 
