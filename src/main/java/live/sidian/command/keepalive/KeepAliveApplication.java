@@ -46,6 +46,8 @@ public class KeepAliveApplication {
             log.info("执行命令:"+command.getRun());
             defaultExecutor.execute(CommandLine.parse(command.getRun()));
             log.info("命令正常结束");
+            // 退出程序
+            System.exit(0);
         } catch (ExecuteException e){
             log.warn("命令运行异常, exit:"+e.getExitValue());
             log.info("将重新运行命令");
@@ -53,9 +55,9 @@ public class KeepAliveApplication {
         } catch (IOException e) {
             log.error("未知异常");
             e.printStackTrace();
+            // 退出程序
+            System.exit(0);
         }
-        // 退出程序
-        System.exit(0);
      }
 
 
