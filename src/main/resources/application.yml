@@ -1,0 +1,5 @@
+command:
+#  run: ssh -R 35003:localhost:5005 -i /root/.ssh/huawei-119.3.200.75.pem -N root@119.3.200.75 # 要执行的命令
+#  run: ssh -D 1050 -N root@sh.sidian.live
+  run: ls
+  exits: -1,0,-1 # 正常结束的状态码, 多个状态码逗号隔开
