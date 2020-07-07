@@ -51,6 +51,7 @@ public class KeepAliveApplication implements ApplicationContextAware{
             } catch (ExecuteException e){
                 log.warn("命令运行异常, exit:"+e.getExitValue());
                 log.info("将重新运行命令");
+                sleep();
             } catch (IOException e) {
                 log.error("未知异常");
                 e.printStackTrace();
@@ -61,6 +62,11 @@ public class KeepAliveApplication implements ApplicationContextAware{
         SpringApplication.exit(this.applicationContext,() -> 0);
      }
 
+     void sleep(){
+         try {
+             Thread.sleep(2000);
+         } catch (InterruptedException ignored) {}
+     }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
