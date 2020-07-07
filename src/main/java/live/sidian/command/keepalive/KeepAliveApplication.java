@@ -3,6 +3,8 @@ package live.sidian.command.keepalive;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.exec.*;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -14,14 +16,12 @@ import java.io.IOException;
 
 @Slf4j
 @SpringBootApplication
-public class KeepAliveApplication {
+public class KeepAliveApplication implements ApplicationContextAware{
 
 
     public static void main(String[] args) {
         SpringApplication.run(KeepAliveApplication.class, args);
     }
-
-    private final MyTaskScheduler taskScheduler=new MyTaskScheduler(5000);
 
     @Resource
     Command command;
@@ -42,23 +42,28 @@ public class KeepAliveApplication {
         // 挂载VM结束事件
         defaultExecutor.setProcessDestroyer(new ShutdownHookProcessDestroyer());
         // 运行命令
-        try {
-            log.info("执行命令:"+command.getRun());
-            defaultExecutor.execute(CommandLine.parse(command.getRun()));
-            log.info("命令正常结束");
-            // 退出程序
-            System.exit(0);
-        } catch (ExecuteException e){
-            log.warn("命令运行异常, exit:"+e.getExitValue());
-            log.info("将重新运行命令");
-            taskScheduler.execute(KeepAliveApplication.this::init);
-        } catch (IOException e) {
-            log.error("未知异常");
-            e.printStackTrace();
-            // 退出程序
-            System.exit(0);
+        while(true){
+            try {
+                log.info("执行命令:"+command.getRun());
+                defaultExecutor.execute(CommandLine.parse(command.getRun()));
+                log.info("命令正常结束");
+                break;
+            } catch (ExecuteException e){
+                log.warn("命令运行异常, exit:"+e.getExitValue());
+                log.info("将重新运行命令");
+            } catch (IOException e) {
+                log.error("未知异常");
+                e.printStackTrace();
+                break;
+            }
         }
+        // 退出程序
+        SpringApplication.exit(this.applicationContext,() -> 0);
      }
 
 
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext=applicationContext;
+    }
 }
